@@ -1,41 +1,58 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
 			 x:Class="AiC_PCD.MainPage">
 
-	<ScrollView>
-		<VerticalStackLayout
-			Spacing="25"
-			Padding="30,0"
-			VerticalOptions="Center">
-
-			<Image
-				Source="dotnet_bot.png"
-				SemanticProperties.Description="Cute dot net bot waving hi to you!"
-				HeightRequest="200"
-				HorizontalOptions="Center" />
-
-			<Label
-				Text="Hello, World!"
-				SemanticProperties.HeadingLevel="Level1"
-				FontSize="32"
-				HorizontalOptions="Center" />
-
-			<Label
-				Text="Welcome to .NET Multi-platform App UI"
-				SemanticProperties.HeadingLevel="Level2"
-				SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-				FontSize="18"
-				HorizontalOptions="Center" />
-
-			<Button
-				x:Name="CounterBtn"
-				Text="Click me"
-				SemanticProperties.Hint="Counts the number of times you click"
-				Clicked="OnCounterClicked"
-				HorizontalOptions="Center" />
-
-		</VerticalStackLayout>
-	</ScrollView>
-
+	<Grid>
+		<Border Stroke="MediumPurple"
+				StrokeThickness="5"
+				IsEnabled="False" />
+		<Grid BackgroundColor="#1E1E1E">
+			<Grid.Resources>
+				<Style TargetType="{Type Rectangle}">
+					<Setter Property="Stroke"
+							Value="White" />
+					<Setter Property="StrokeThickness"
+							Value="2" />
+					<Setter Property="HeightRequest"
+							Value="120" />
+					<Setter Property="WidthRequest"
+							Value="120" />
+					<Setter Property="Rotation"
+							Value="45" />
+				</Style>
+			</Grid.Resources>
+			<Grid.GestureRecognizers>
+				<TapGestureRecognizer Tapped="BG_Tapped" />
+			</Grid.GestureRecognizers>
+			<Rectangle x:Name="Cast_Arrow"
+					   ZIndex="8888">
+				<Rectangle.GestureRecognizers>
+					<TapGestureRecognizer Tapped="Cast_Arrow_Tapped" />
+				</Rectangle.GestureRecognizers>
+			</Rectangle>
+			<Rectangle x:Name="Cast_Ball"
+					   Stroke="Red"
+					   Opacity="0">
+				<Rectangle.GestureRecognizers>
+					<TapGestureRecognizer Tapped="Cast_Ball_Tapped" />
+				</Rectangle.GestureRecognizers>
+			</Rectangle>
+			<Rectangle x:Name="Cast_Ltng"
+					   Stroke="Lime"
+					   Opacity="0">
+				<Rectangle.GestureRecognizers>
+					<TapGestureRecognizer Tapped="Cast_Ltng_Tapped" />
+				</Rectangle.GestureRecognizers>
+			</Rectangle>
+			<Rectangle x:Name="Cast_Bomb"
+					   Stroke="Blue"
+					   Opacity="0">
+				<Rectangle.GestureRecognizers>
+					<TapGestureRecognizer Tapped="Cast_Bomb_Tapped" />
+				</Rectangle.GestureRecognizers>
+			</Rectangle>
+		</Grid>
+	</Grid>
 </ContentPage>
