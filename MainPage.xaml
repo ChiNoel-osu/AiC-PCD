@@ -30,6 +30,8 @@
 					   ZIndex="8888">
 				<Rectangle.GestureRecognizers>
 					<TapGestureRecognizer Tapped="Cast_Arrow_Tapped" />
+					<SwipeGestureRecognizer Direction="Left"
+											Swiped="Cast_Arrow_Swipe_Left" />
 				</Rectangle.GestureRecognizers>
 			</Rectangle>
 			<Rectangle x:Name="Cast_Ball"
@@ -53,6 +55,13 @@
 					<TapGestureRecognizer Tapped="Cast_Bomb_Tapped" />
 				</Rectangle.GestureRecognizers>
 			</Rectangle>
+			<Rectangle x:Name="Select_Rect"
+					   StrokeThickness="1"
+					   IsVisible="False"
+					   Opacity="66"
+					   InputTransparent="True"
+					   HeightRequest="140"
+					   WidthRequest="140" />
 		</Grid>
 	</Grid>
 </ContentPage>

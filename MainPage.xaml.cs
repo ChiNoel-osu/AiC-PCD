@@ -6,13 +6,24 @@ namespace AiC_PCD;
 public partial class MainPage : ContentPage
 {
 	IAudioPlayer castStart, castAlter, castConfirm, casting, castingExt1, castingExt2, castDone, castHold1, castHold2,
-				castArrowCharge, castArrowRelease, castBallRelease, castBombRelease, castBombExplode;
+				castArrowCharge, castArrowRelease, castBallRelease, castBombRelease, castBombExplode, castCancel;
 	public MainPage()
 	{
 		InitializeComponent();
+		Task.Run(() =>
+		{
+			while (true)
+			{   //The select rectangle animation.
+				_ = Select_Rect.ScaleTo(0.85, easing: Easing.SinIn);
+				Thread.Sleep(250);
+				_ = Select_Rect.ScaleTo(1, easing: Easing.SinOut);
+				Thread.Sleep(250);
+			}
+		});
 	}
 
-	private const ushort arrowCastTime = 500, ballCastTime = 1234, ltngCastTime = 800, bombCastTime = 500;
+	const ushort arrowCastTime = 500, ballCastTime = 1234, ltngCastTime = 800, bombCastTime = 500;
+
 	Magic? selected = null;
 	Magic? magic2Cast = null;
 	bool isHolding = false, isCasting = false, isMagicReleasing = false;
@@ -30,7 +41,7 @@ public partial class MainPage : ContentPage
 			magic2Cast = null;
 		}
 		else if (selected is null)
-		{
+		{   //Select the magic.
 			selected = Magic.Arrow;
 			castStart!.Stop();
 			castStart!.Play();
@@ -41,15 +52,12 @@ public partial class MainPage : ContentPage
 			_ = Cast_Ball.FadeTo(100, 1000, Easing.SinOut);
 			_ = Cast_Ltng.FadeTo(100, 1000, Easing.SinOut);
 			_ = Cast_Bomb.FadeTo(100, 1000, Easing.SinOut);
+			_ = Select_Rect.IsVisible = true;
 		}
-		else if (selected is Magic.Arrow)
+		else if (selected is Magic.Arrow)   //Cast WhiteArrow magic.
 			ConfirmCast(Magic.Arrow, arrowCastTime);
 		else
-		{
-			selected = Magic.Arrow;
-			castAlter!.Stop();
-			castAlter!.Play();
-		}
+			SelectMagic(Magic.Arrow, arrowCastTime);
 	}
 	private void Cast_Ball_Tapped(object sender, TappedEventArgs e)
 	{
@@ -63,14 +71,24 @@ public partial class MainPage : ContentPage
 	{
 		SelectMagic(Magic.Bomb, bombCastTime);
 	}
-
+	private async void Cast_Arrow_Swipe_Left(object sender, SwipedEventArgs e)
+	{
+		if (isHolding && !isCasting && !isMagicReleasing)
+		{
+			castCancel ??= AudioManager.Current.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("SFX\\magic_chanted_hold_pr.wav"));
+			ResetTransform();
+			magic2Cast = null;
+			isHolding = false;
+			castCancel.Play();
+			castHold1.Stop();
+			castHold2.Stop();
+		}
+	}
 	private void BG_Tapped(object sender, TappedEventArgs e)
 	{
 		ResetTransform();
 		if (selected is not null)
-		{
 			selected = null;
-		}
 	}
 
 	#region Extracted Methods
@@ -82,6 +100,9 @@ public partial class MainPage : ContentPage
 		_ = Cast_Ball.FadeTo(0, 100);
 		_ = Cast_Ltng.FadeTo(0, 100);
 		_ = Cast_Bomb.FadeTo(0, 100);
+		_ = Select_Rect.TranslateTo(0, 0);
+		_ = Select_Rect.IsVisible = false;
+		Cast_Arrow.Stroke = Colors.White;
 	}
 	private void SelectMagic(Magic magic, ushort castTime)
 	{
@@ -89,7 +110,14 @@ public partial class MainPage : ContentPage
 			ConfirmCast(magic, castTime);
 		else
 		{
-			selected = magic;
+			_ = (selected = magic) switch
+			{
+				Magic.Arrow => Select_Rect.TranslateTo(0, 0, 200, Easing.CubicOut),
+				Magic.Ball => Select_Rect.TranslateTo(169, 0, 200, Easing.CubicOut),
+				Magic.Lightning => Select_Rect.TranslateTo(0, -169, 200, Easing.CubicOut),
+				Magic.Bomb => Select_Rect.TranslateTo(0, 169, 200, Easing.CubicOut),
+				_ => throw new NotImplementedException(),
+			};
 			castAlter!.Stop();
 			castAlter!.Play();
 		}
@@ -119,8 +147,7 @@ public partial class MainPage : ContentPage
 		}
 		ResetTransform();
 		selected = null;
-		castConfirm.Stop();
-		castConfirm.Play();
+		castConfirm.Stop(); castConfirm.Play();
 		casting.Play();
 		isCasting = true;
 		Task.Run(() =>
